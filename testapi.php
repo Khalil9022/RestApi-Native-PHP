@@ -76,9 +76,9 @@ function insert_user()
         }
 
         $result = mysqli_query($connect, "INSERT INTO user SET 
-        user_nama = '$_POST[nama]',
-        user_jenis_kelamin = '$_POST[jenis_kelamin]',
-        user_alamat = '$_POST[alamat]'");
+            user_nama = '$_POST[nama]',
+            user_jenis_kelamin = '$_POST[jenis_kelamin]',
+            user_alamat = '$_POST[alamat]'");
 
         if ($result) {
             $respone = array(
@@ -99,5 +99,74 @@ function insert_user()
     };
 
     header('Content-Type: application/json');
+    echo json_encode($respone);
+}
+
+function edit_user()
+{
+    global $connect;
+
+    if (!empty($_GET['id'])) {
+        $id = $_GET['id'];
+    }
+    $edit = array(
+        'nama' => '',
+        'jenis_kelamin' => '',
+        'alamat' => ''
+    );
+
+    $edit_match = count(array_intersect_key($_POST, $edit));
+    if ($edit_match == count($edit)) {
+
+        $result = mysqli_query($connect, "UPDATE user SET 
+            user_nama = '$_POST[nama]',
+            user_jenis_kelamin = '$_POST[jenis_kelamin]',
+            user_alamat = '$_POST[alamat]'
+            WHERE user_id = $id");
+
+        if ($result) {
+            $respone = array(
+                'status' => 1,
+                'message' => "Edit Success!"
+            );
+        } else {
+            $respone = array(
+                'status' => 0,
+                'message' => "Edit Failed!"
+            );
+        }
+    } else {
+        $respone = array(
+            'status' => 0,
+            'message' => "Wrong Parameter!",
+            'Data' => $id
+        );
+    }
+    header('Content-Type: application/json');
+    echo json_encode($respone);
+}
+
+function delete_user()
+{
+    global $connect;
+
+    if (!empty($_GET['id'])) {
+        $id = $_GET['id'];
+    }
+
+    $result = mysqli_query($connect, "DELETE FROM user WHERE user_id = $id");
+    if ($result) {
+        $respone = array(
+            'status' => 1,
+            'message' => "Delete Success"
+        );
+    } else {
+        $respone = array(
+            'status' => 0,
+            'message' => "Delete Failed"
+        );
+    }
+
+    header('Content-Type:application/json');
     echo json_encode($respone);
 }
